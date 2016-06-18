@@ -1,0 +1,4 @@
+include 'ratpack-kafka-producer'
+
+rootProject.name='ratpack-kafka-parent'
+
