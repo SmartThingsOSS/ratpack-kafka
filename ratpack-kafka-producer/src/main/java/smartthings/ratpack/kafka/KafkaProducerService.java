@@ -33,15 +33,9 @@ public class KafkaProducerService implements Service {
 	}
 
 	public Promise<RecordMetadata> send(String topic, Integer partition, Long timestamp, byte[] key, byte[] value) {
-
-		return Promise.async(downstream -> {
-			kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value), (RecordMetadata metadata, java.lang.Exception exception) -> {
-				if (metadata != null) {
-					downstream.success(metadata);
-				} else {
-					downstream.error(exception);
-				}
-			});
+		// Due to the fact that send can block in situations we need to treat this whole thing as blocking if https://issues.apache.org/jira/browse/KAFKA-3539 is fixed we can start consuming it as we normally would.
+		return Blocking.get(() -> {
+			return kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value)).get();
 		});
 	}
 

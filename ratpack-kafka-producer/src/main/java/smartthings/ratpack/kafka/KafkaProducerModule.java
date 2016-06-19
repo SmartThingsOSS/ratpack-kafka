@@ -1,5 +1,6 @@
 package smartthings.ratpack.kafka;
 
+import com.google.inject.Scopes;
 import ratpack.guice.ConfigurableModule;
 
 import java.util.Properties;
@@ -10,15 +11,14 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 
 	@Override
 	protected void configure() {
-
+		bind(KafkaProducerService.class).in(Scopes.SINGLETON);
 	}
 
 	public static class Config {
 
 		Set<String> servers;
 		String clientId;
-		Long maxBlockMillis =  TimeUnit.MINUTES.toMillis(1);
-
+		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 
 		public Config() {
 		}
