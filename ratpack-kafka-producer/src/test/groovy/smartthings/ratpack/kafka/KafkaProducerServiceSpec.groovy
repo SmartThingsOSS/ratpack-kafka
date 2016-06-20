@@ -10,6 +10,10 @@ import spock.lang.Specification
 
 class KafkaProducerServiceSpec extends Specification {
 
+	String getTestKafkaServers() {
+		return System.getenv("KAFKA_SERVER") ?: '192.168.99.100:9092'
+	}
+
 	@AutoCleanup
 	ExecHarness harness = ExecHarness.harness()
 
@@ -17,7 +21,7 @@ class KafkaProducerServiceSpec extends Specification {
 		given:
 		KafkaProducerModule.Config config = new KafkaProducerModule.Config()
 		config.setClientId("test_clientId")
-		config.setMaxBlockMillis(200L)
+		config.setMaxBlockMillis(500L)
 		config.setServers(['localhost:1'] as Set<String>)
 		KafkaProducerService service
 
@@ -45,8 +49,8 @@ class KafkaProducerServiceSpec extends Specification {
 		given:
 		KafkaProducerModule.Config config = new KafkaProducerModule.Config()
 		config.setClientId("test_clientId")
-		config.setServers(['192.168.99.100:9092'] as Set<String>)
-		config.setMaxBlockMillis(500L)
+		config.setServers([getTestKafkaServers()] as Set<String>)
+		config.setMaxBlockMillis(1000L)
 		KafkaProducerService service
 		byte[] key = "fake_key".bytes
 		byte[] value = "fake_value".bytes
@@ -77,8 +81,8 @@ class KafkaProducerServiceSpec extends Specification {
 		given:
 		KafkaProducerModule.Config config = new KafkaProducerModule.Config()
 		config.setClientId("test_clientId")
-		config.setServers(['192.168.99.100:9092'] as Set<String>)
-		config.setMaxBlockMillis(500L)
+		config.setServers([getTestKafkaServers()] as Set<String>)
+		config.setMaxBlockMillis(1000L)
 		KafkaProducerService service
 		byte[] key = "fake_key".bytes
 		byte[] value = "fake_value".bytes
