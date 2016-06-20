@@ -2,10 +2,30 @@ machine:
   java:
     version:
       oraclejdk8
+  environment:
+    KAFKA_SERVER: 'localhost:9092'
 
 dependencies:
   override:
     - ./gradlew classes testClasses
+
+    # Download kafka if it isn't cached
+    - '[ -d ~/kafka_2.11-0.10.0.0 ] || curl -L http://apache.mirror.gtcomm.net/kafka/0.10.0.0/kafka_2.11-0.10.0.0.tgz | tar -xz -C ~/'
+
+    # Start Zookeeper in the background
+    - '~/kafka_2.11-0.10.0.0/bin/zookeeper-server-start.sh ~/kafka_2.11-0.10.0.0/config/zookeeper.properties':
+        background: true
+
+    # Start Kafka in the background
+    - '~/kafka_2.11-0.10.0.0/bin/kafka-server-start.sh ~/kafka_2.11-0.10.0.0/config/server.properties':
+        background: true
+
+    # Wait for Kafka to start
+    - sleep 10
+
+  cache_directories:
+    - ~/.gradle
+    - ~/kafka_2.11-0.10.0.0
 
 test:
   override:
