@@ -11,7 +11,7 @@ import spock.lang.Specification
 class KafkaProducerServiceSpec extends Specification {
 
 	String getTestKafkaServers() {
-		return System.getenv("KAFKA_SERVER") ?: '192.168.99.100:9092'
+		return System.getenv("KAFKA_SERVER") ?: '127.0.0.1:9092'
 	}
 
 	@AutoCleanup
