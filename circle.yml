@@ -5,6 +5,12 @@ machine:
   environment:
     KAFKA_SERVER: 'localhost:9092'
 
+checkout:
+  post:
+    - mkdir -p ~/build-common
+    - curl -L https://smartthings-provisioning.s3.amazonaws.com/build-common/build-common.tar.gz | tar xvz -C ~/build-common
+    - sudo pip install -r ~/build-common/requirements.txt
+
 dependencies:
   override:
     - ./gradlew classes testClasses
@@ -20,12 +26,17 @@ dependencies:
     - '~/kafka_2.11-0.10.0.0/bin/kafka-server-start.sh ~/kafka_2.11-0.10.0.0/config/server.properties':
         background: true
 
-    # Wait for Kafka to start
-    - sleep 10
-
   cache_directories:
     - ~/.gradle
     - ~/kafka_2.11-0.10.0.0
+
+database:
+  override:
+    #Wait for ZK to start
+    - ~/build-common/circle-ci/wait_for_socket.py --timeout=60 --port=2181
+
+    #Wait for Kafka to start
+    - ~/build-common/circle-ci/wait_for_socket.py --timeout=60 --port=9092
 
 test:
   override:
