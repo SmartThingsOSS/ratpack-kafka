@@ -22,12 +22,21 @@ dependencies:
 test:
   pre:
     - docker-compose up -d
+    - ./etc/ci/wait_for_socket.py --timeout=60 --port=2281
+    - ./etc/ci/wait_for_socket.py --timeout=60 --port=9092
+    - sleep 30
   override:
+    # Seem to be running into https://issues.apache.org/jira/browse/KAFKA-3296
+    # Run tests to 'warm' kafka but don't check for failures.
+    - ./gradlew :ratpack-kafka-consumer:check || true
+
+    # Run tests for realz.
     - ./gradlew check jacocoTestReport
 
   post:
     - 'find . -type f -name "*.xml" | grep "build/test-results" | xargs cp -t $CIRCLE_TEST_REPORTS/'
     - bash <(curl -s https://codecov.io/bash)
+    - docker-compose logs >> $CIRCLE_ARTIFACTS/docker-compose.log
 
 deployment:
   snapshot:
