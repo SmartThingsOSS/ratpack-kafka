@@ -20,12 +20,17 @@ dependencies:
     - '~/kafka_2.11-0.10.0.0/bin/kafka-server-start.sh ~/kafka_2.11-0.10.0.0/config/server.properties':
         background: true
 
-    # Wait for Kafka to start
-    - sleep 20
-
   cache_directories:
     - ~/.gradle
     - ~/kafka_2.11-0.10.0.0
+
+database:
+  override:
+    #Wait for ZK to start
+    - ./etc/ci/wait_for_socket.py --timeout=60 --port=2181
+
+    #Wait for Kafka to start
+    - ./etc/ci/wait_for_socket.py --timeout=60 --port=9092
 
 test:
   override:
