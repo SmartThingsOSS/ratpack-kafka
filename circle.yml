@@ -23,6 +23,7 @@ test:
   pre:
     - docker-compose down
     - docker-compose up -d
+    - sleep 90
   override:
     - ./gradlew check jacocoTestReport
 
