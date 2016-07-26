@@ -6,14 +6,15 @@ import smartthings.ratpack.kafka.Consumer
 
 class TestConsumer implements Consumer<byte[], byte[]> {
 
-	final String group = 'test-consumer'
+	String group
 	final String[] topics = ['test']
 
 	TestService testService
 
 	@Inject
 	TestConsumer(TestService testService) {
-		this.testService = testService\
+		this.testService = testService
+		group = 'test-consuemr' + UUID.randomUUID().toString()
 	}
 
 	@Override
@@ -25,7 +26,7 @@ class TestConsumer implements Consumer<byte[], byte[]> {
 			try {
 				bais = new ByteArrayInputStream(record.value());
 				oi = new ObjectInputStream(bais);
-				TestData data = (TestData) oi.readObject()
+				TestData data = (TestData)oi.readObject()
 				testService.run(data)
 			} catch (IOException e) {
 				//ignore
@@ -37,7 +38,6 @@ class TestConsumer implements Consumer<byte[], byte[]> {
 					bais.close()
 				}
 			}
-
 
 		}
 	}

@@ -31,7 +31,8 @@ class ConsumerAction implements Action<Execution> {
 	}
 
 	void shutdown() {
-		client.wakeup();
+//		client.wakeup();
+		client.close();
 	}
 
 	@SuppressWarnings("unchecked")
