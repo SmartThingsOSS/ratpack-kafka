@@ -17,7 +17,7 @@ class KafkaConsumerServiceSpec extends Specification {
 		return System.getenv("KAFKA_SERVER") ?: '127.0.0.1:9092'
 	}
 
-	private static final String CLIENT_ID = 'test-client'
+	private static final String CLIENT_ID = 'test-client-producer'
 	private static final TestData data = new TestData(id: 1, name: 'Hello World')
 
 	TestService testService = Mock(TestService)
@@ -31,16 +31,16 @@ class KafkaConsumerServiceSpec extends Specification {
 			bindings.moduleConfig(KafkaConsumerModule, new KafkaConsumerModule.Config(), { config ->
 				config.setServers([getTestKafkaServers()] as Set<String>)
 			})
+			bindings.moduleConfig(KafkaProducerModule, new KafkaProducerModule.Config(), { config ->
+				config.setServers([getTestKafkaServers()] as Set<String>)
+				config.setClientId(CLIENT_ID)
+			})
 			bindings.bindInstance(TestService, testService)
 			bindings.bindInstance(TestConsumer, testConsumer)
-			bindings.bindInstance(
-				TestProducerService,
-				new TestProducerService([getTestKafkaServers()] as Set<String>, CLIENT_ID)
-			)
 		})
 		handlers {
 			post('produce') { ctx ->
-				TestProducerService producer = ctx.get(TestProducerService)
+				KafkaProducerService producer = ctx.get(KafkaProducerService)
 				ByteArrayOutputStream baos
 				ObjectOutputStream oos
 				try {
@@ -48,10 +48,10 @@ class KafkaConsumerServiceSpec extends Specification {
 					oos = new ObjectOutputStream(baos)
 					oos.writeObject(data)
 					byte[] bytes = baos.toByteArray()
-					producer.send('test', bytes, bytes)
+					producer.send('test', null, null, bytes, bytes)
 						.then({
-							ctx.render('ok')
-						})
+						ctx.render('ok' + it.toString())
+					})
 				} catch (IOException ie) {
 					ctx.error(ie)
 				} catch (Throwable t) {
@@ -71,7 +71,7 @@ class KafkaConsumerServiceSpec extends Specification {
 
 	void 'it should consumer Kafka messages'() {
 		given:
-		def done = new BlockingVariable(10)
+		def done = new BlockingVariable(30)
 
 		and:
 		testService.run(_ as TestData) >> { data ->
@@ -83,7 +83,7 @@ class KafkaConsumerServiceSpec extends Specification {
 
 		then:
 		println("The call to the producer finished - [status: ${status}]")
-		assert status == 'ok'
+		assert (status =~ "^ok")
 		def result = done.get()
 		assert result.id == data.id
 		assert result.name == data.name

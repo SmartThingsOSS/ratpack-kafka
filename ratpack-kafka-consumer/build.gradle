@@ -4,6 +4,9 @@ dependencies {
 
 	compile "org.apache.kafka:kafka-clients:${kafkaClientVersion}"
 
+
+	testCompile project(':ratpack-kafka-producer')
+
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 	testCompile "io.ratpack:ratpack-groovy-test:${ratpackVersion}"
 	testCompile 'cglib:cglib-nodep:3.2.4'
