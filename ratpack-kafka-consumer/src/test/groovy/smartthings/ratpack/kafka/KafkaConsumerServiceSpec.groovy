@@ -71,7 +71,7 @@ class KafkaConsumerServiceSpec extends Specification {
 
 	void 'it should consumer Kafka messages'() {
 		given:
-		def done = new BlockingVariable(30)
+		def done = new BlockingVariable(2)
 
 		and:
 		testService.run(_ as TestData) >> { data ->
