@@ -13,3 +13,4 @@ target/
 *.orig
 *~
 .DS_Store
+.gradletasknamecache
