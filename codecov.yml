@@ -1,0 +1,10 @@
+coverage:
+  status:
+    patch: false
+    project:
+      default:
+        target: '80'
+    changes: false
+comment:
+  layout: "header, diff, changes, sunburst, uncovered, tree"
+  behavior: default
