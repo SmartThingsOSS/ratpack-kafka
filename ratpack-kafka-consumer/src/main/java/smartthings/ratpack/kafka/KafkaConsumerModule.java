@@ -3,6 +3,8 @@ package smartthings.ratpack.kafka;
 import com.google.inject.Scopes;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import ratpack.guice.ConfigurableModule;
+import smartthings.ratpack.kafka.circuitbreaker.CircuitBreaker;
+import smartthings.ratpack.kafka.circuitbreaker.SimpleCircuitBreaker;
 
 import java.util.Properties;
 import java.util.Set;
@@ -14,6 +16,7 @@ public class KafkaConsumerModule extends ConfigurableModule<KafkaConsumerModule.
 
 	protected void configure() {
 		bind(KafkaConsumerService.class).in(Scopes.SINGLETON);
+		bind(CircuitBreaker.class).toProvider(SimpleCircuitBreaker::new);
 	}
 
 	/**

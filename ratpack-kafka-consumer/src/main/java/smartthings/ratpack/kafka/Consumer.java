@@ -2,6 +2,7 @@ package smartthings.ratpack.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import ratpack.func.Action;
+import smartthings.ratpack.kafka.event.KafkaConsumerEvent;
 
 import java.util.Properties;
 
@@ -33,7 +34,7 @@ public interface Consumer<K, V> {
 	/**
 	 * Determines how many consumers will be spun up on application start.
 	 * @return
-     */
+	 */
 	default Integer getConcurrencyLevel() {
 		return 1;
 	}
@@ -42,7 +43,7 @@ public interface Consumer<K, V> {
 	 * The frequency at which the Kafka consumer client internally polls.
 	 * See Apache\'s KafkaConsumer::poll(long timeout)
 	 * @return
-     */
+	 */
 	default Long getPollWaitTime() {
 		return Long.MAX_VALUE;
 	}
@@ -54,4 +55,10 @@ public interface Consumer<K, V> {
 	default Properties getKafkaProperties() {
 		return new Properties();
 	}
+
+	/**
+	 * Event handler called on state changes to the kafka consumer.
+	 * @param event
+	 */
+	default void eventHandler(KafkaConsumerEvent event) {}
 }

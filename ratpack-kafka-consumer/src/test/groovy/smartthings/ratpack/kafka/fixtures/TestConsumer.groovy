@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import smartthings.ratpack.kafka.Consumer
+import smartthings.ratpack.kafka.event.KafkaConsumerEvent
+import smartthings.ratpack.kafka.event.KafkaConsumerEventListener
 
 @Slf4j
 class TestConsumer implements Consumer<byte[], byte[]> {
@@ -12,6 +14,7 @@ class TestConsumer implements Consumer<byte[], byte[]> {
 	final String[] topics
 
 	TestService testService
+	List<KafkaConsumerEventListener> listeners = new ArrayList<>();
 
 	@Inject
 	TestConsumer(TestService testService, String group, String topic) {
@@ -47,7 +50,17 @@ class TestConsumer implements Consumer<byte[], byte[]> {
 		}
 	}
 
+	@Override
 	Long getPollWaitTime() {
 		return 3000
+	}
+
+	@Override
+	void eventHandler(KafkaConsumerEvent event) {
+		listeners*.eventNotification(event)
+	}
+
+	void addEventListener(KafkaConsumerEventListener listener) {
+		listeners.add(listener)
 	}
 }
