@@ -5,7 +5,7 @@ buildscript {
 
 	dependencies {
 		classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
 	}
 }
 
@@ -24,19 +24,15 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
-
-
 	group = "smartthings"
 	version = rootProject.file('version.txt').text.trim()
 
 	apply plugin: "base"
 	apply plugin: "groovy"
-	apply plugin: "maven-publish"
-	apply plugin: "jacoco"
 	apply plugin: 'idea'
 	apply plugin: 'com.github.ben-manes.versions'
-  apply from: rootProject.file('gradle/publishing.gradle')
-
+	apply from: rootProject.file('gradle/publishing.gradle')
+	apply from: rootProject.file('gradle/convention.gradle')
 
 	sourceCompatibility = "1.8"
 	targetCompatibility = "1.8"
@@ -44,11 +40,5 @@ subprojects {
 	repositories {
 		mavenLocal()
 		jcenter()
-	}
-
-	jacocoTestReport {
-  	reports {
-	    xml.enabled true
-		}
 	}
 }

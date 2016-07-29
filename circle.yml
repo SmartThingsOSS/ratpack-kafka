@@ -35,6 +35,7 @@ test:
 
   post:
     - 'find . -type f -name "*.xml" | grep "build/test-results" | xargs cp -t $CIRCLE_TEST_REPORTS/'
+    - 'find . -type f \( -name "*.html" -or -name "*.xml" \) | grep "build/coverage" | xargs cp --parents -t $CIRCLE_TEST_REPORTS/'
     - bash <(curl -s https://codecov.io/bash)
     - docker-compose logs >> $CIRCLE_ARTIFACTS/docker-compose.log
 

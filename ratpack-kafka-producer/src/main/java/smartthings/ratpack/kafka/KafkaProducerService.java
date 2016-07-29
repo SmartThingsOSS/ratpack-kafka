@@ -10,6 +10,9 @@ import ratpack.service.Service;
 import ratpack.service.StartEvent;
 import ratpack.service.StopEvent;
 
+/**
+ * Service class to wrap logic of interacting with Kafka to produce messages.
+ */
 public class KafkaProducerService implements Service {
 
 	private KafkaProducer<byte[], byte[]> kafkaProducer;

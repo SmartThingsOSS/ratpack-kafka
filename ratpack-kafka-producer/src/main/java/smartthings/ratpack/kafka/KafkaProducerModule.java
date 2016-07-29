@@ -7,6 +7,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Guice module bindings for the RatPack Kafka producer library.
+ */
 public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.Config> {
 
 	@Override
@@ -14,6 +17,9 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		bind(KafkaProducerService.class).in(Scopes.SINGLETON);
 	}
 
+	/**
+	 * Primary configuration object for RatPack Kafka Producer module.
+	 */
 	public static class Config {
 
 		Set<String> servers;
