@@ -8,6 +8,7 @@ import ratpack.exec.Blocking;
 import ratpack.exec.Execution;
 import ratpack.exec.Promise;
 import ratpack.func.Action;
+import smartthings.ratpack.kafka.circuitbreaker.CircuitBreaker;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,11 +24,13 @@ class ConsumerAction implements Action<Execution> {
 	private final Consumer consumer;
 	private final KafkaConsumerModule.Config config;
 	private final KafkaConsumer client;
+	private final CircuitBreaker circuitBreaker;
 
-	ConsumerAction(Consumer consumer, KafkaConsumerModule.Config config) {
+	ConsumerAction(Consumer consumer, KafkaConsumerModule.Config config, CircuitBreaker circuitBreaker) {
 		this.consumer = consumer;
 		this.config = config;
 		this.client = new KafkaConsumer(getKafkaProperties());
+		this.circuitBreaker = circuitBreaker;
 	}
 
 	void shutdown() {
@@ -55,7 +58,8 @@ class ConsumerAction implements Action<Execution> {
 
 	@SuppressWarnings("unchecked")
 	private Promise<?> poll() {
-		return Blocking.get(() -> client.poll(consumer.getPollWaitTime()))
+		return circuitBreaker.blockIfOpen()
+			.flatMap(() -> Blocking.get(() -> client.poll(consumer.getPollWaitTime())))
 			.operation(consumer::consume)
 			.flatMap(this::poll);
 	}
@@ -74,9 +78,9 @@ class ConsumerAction implements Action<Execution> {
 	@Override
 	public String toString() {
 		return "Consumer{" +
-				"class=" + consumer.getClass().getSimpleName() +
-				", topics=[" + String.join(",", Arrays.asList(consumer.getTopics())) + "]" +
-				", group=" + consumer.getGroup() +
-				'}';
+			"class=" + consumer.getClass().getSimpleName() +
+			", topics=[" + String.join(",", Arrays.asList(consumer.getTopics())) + "]" +
+			", group=" + consumer.getGroup() +
+			'}';
 	}
 }
