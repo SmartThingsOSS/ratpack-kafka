@@ -34,46 +34,17 @@ public class KafkaConsumerService implements Service {
 	@Override
 	public void onStart(StartEvent event) {
 		// Find all configured Consumer implementations from Registry.
-		Iterator<? extends Consumer> it = event.getRegistry().getAll(TypeToken.of(Consumer.class)).iterator();
-		circuitBreaker = event.getRegistry().get(CircuitBreaker.class);
-		circuitBreaker.init(new CircuitBreakerListener() {
-			@Override
-			public void opened() {
-				notifyEventListeners(KafkaConsumerEvent.SUSPENDED_EVENT);
-			}
-
-			@Override
-			public void closed() {
-				notifyEventListeners(KafkaConsumerEvent.RESUMED_EVENT);
-			}
-		});
-
-		// Populate our actions in accordance with the desired concurrency level.
-		if (it != null && it.hasNext()){
-			it.forEachRemaining(consumer -> {
-				int concurrency = consumer.getConcurrencyLevel();
-				registerEventListener((e) -> consumer.eventHandler(e));
-
-				IntStream
-					.rangeClosed(1, concurrency)
-					.forEach((action) -> actions.add(new ConsumerAction(consumer, config, circuitBreaker)));
-			});
+		if (config.isEnabled()) {
+			startup(event);
 		}
-
-		// Kick off a new execution for each defined consumer.
-		if (!actions.isEmpty()) {
-			actions.forEach((action) -> Execution.fork().start(action));
-		}
-
-		notifyEventListeners(KafkaConsumerEvent.STARTED_EVENT);
 	}
 
 	@Override
 	public void onStop(StopEvent event) {
 		if (!actions.isEmpty()) {
 			actions.forEach(ConsumerAction::shutdown);
+			notifyEventListeners(KafkaConsumerEvent.STOPPED_EVENT);
 		}
-		notifyEventListeners(KafkaConsumerEvent.STOPPED_EVENT);
 	}
 
 	/**
@@ -116,5 +87,40 @@ public class KafkaConsumerService implements Service {
 
 	private void notifyEventListeners(KafkaConsumerEvent event) {
 		listeners.forEach((listener) -> listener.eventNotification(event));
+	}
+
+	private void startup(StartEvent event) {
+		Iterator<? extends Consumer> it = event.getRegistry().getAll(TypeToken.of(Consumer.class)).iterator();
+		circuitBreaker = event.getRegistry().get(CircuitBreaker.class);
+		circuitBreaker.init(new CircuitBreakerListener() {
+			@Override
+			public void opened() {
+				notifyEventListeners(KafkaConsumerEvent.SUSPENDED_EVENT);
+			}
+
+			@Override
+			public void closed() {
+				notifyEventListeners(KafkaConsumerEvent.RESUMED_EVENT);
+			}
+		});
+
+		// Populate our actions in accordance with the desired concurrency level.
+		if (it != null && it.hasNext()) {
+			it.forEachRemaining(consumer -> {
+				int concurrency = consumer.getConcurrencyLevel();
+				registerEventListener((e) -> consumer.eventHandler(e));
+
+				IntStream
+						.rangeClosed(1, concurrency)
+						.forEach((action) -> actions.add(new ConsumerAction(consumer, config, circuitBreaker)));
+			});
+		}
+
+		// Kick off a new execution for each defined consumer.
+		if (!actions.isEmpty()) {
+			actions.forEach((action) -> Execution.fork().start(action));
+		}
+
+		notifyEventListeners(KafkaConsumerEvent.STARTED_EVENT);
 	}
 }
