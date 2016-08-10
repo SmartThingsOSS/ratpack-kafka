@@ -25,6 +25,7 @@ public class KafkaConsumerModule extends ConfigurableModule<KafkaConsumerModule.
 	public static class Config {
 
 		Set<String> servers;
+		boolean enabled = true;
 
 		public Config() {
 		}
@@ -45,6 +46,14 @@ public class KafkaConsumerModule extends ConfigurableModule<KafkaConsumerModule.
 
 		public void setServers(Set<String> servers) {
 			this.servers = servers;
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 	}
 
