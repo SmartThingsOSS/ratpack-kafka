@@ -26,20 +26,28 @@ public class KafkaProducerService implements Service {
 
 	@Override
 	public void onStart(StartEvent event) throws Exception {
-		kafkaProducer = new KafkaProducer<>(config.getKafkaProperties());
-		kafkaProducer.partitionsFor("test");
+		if (config.isEnabled()) {
+			kafkaProducer = new KafkaProducer<>(config.getKafkaProperties());
+			kafkaProducer.partitionsFor("test");
+		}
 	}
 
 	@Override
 	public void onStop(StopEvent event) throws Exception {
-		kafkaProducer.close();
+		if (kafkaProducer != null) {
+			kafkaProducer.close();
+		}
 	}
 
 	public Promise<RecordMetadata> send(String topic, Integer partition, Long timestamp, byte[] key, byte[] value) {
-		// Due to the fact that send can block in situations we need to treat this whole thing as blocking if https://issues.apache.org/jira/browse/KAFKA-3539 is fixed we can start consuming it as we normally would.
-		return Blocking.get(() -> {
-			return kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value)).get();
-		});
-	}
 
+		if (kafkaProducer == null) {
+			return Promise.error(new IllegalStateException("KafkaProducer is currently not available."));
+		}
+
+		// Due to the fact that send can block in situations we need to treat this whole thing as blocking if https://issues.apache.org/jira/browse/KAFKA-3539 is fixed we can start consuming it as we normally would.
+		return Blocking.get(() ->
+			kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value)).get()
+		);
+	}
 }

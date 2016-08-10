@@ -25,6 +25,7 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		Set<String> servers;
 		String clientId;
 		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
+		boolean enabled = true;
 
 		public Config() {
 		}
@@ -63,6 +64,14 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 
 		public void setMaxBlockMillis(Long maxBlockMillis) {
 			this.maxBlockMillis = maxBlockMillis;
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 	}
 }
