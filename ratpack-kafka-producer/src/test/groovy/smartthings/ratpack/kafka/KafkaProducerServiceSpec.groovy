@@ -121,4 +121,39 @@ class KafkaProducerServiceSpec extends Specification {
 		then:
 		noExceptionThrown()
 	}
+
+	def "should throw IllegalStateExeception when message sent while disabled"() {
+		given:
+		KafkaProducerModule.Config config = new KafkaProducerModule.Config()
+		config.setClientId("test_clientId")
+		config.setServers([getTestKafkaServers()] as Set<String>)
+		config.setMaxBlockMillis(1000L)
+		config.setEnabled(false);
+		KafkaProducerService service
+		byte[] key = "fake_key".bytes
+		byte[] value = "fake_value".bytes
+
+		when:
+		def result = harness.yield {
+			service = new KafkaProducerService(config)
+			service.onStart(new StartEvent() {
+				@Override
+				Registry getRegistry() {
+					return Registry.empty()
+				}
+
+				@Override
+				boolean isReload() {
+					return false
+				}
+			})
+
+			return service.send("test", null, null, key, value)
+		}
+
+		then:
+		assert result.error
+		assert result.throwable.getClass() == IllegalStateException
+		assert result.throwable.getMessage() == 'KafkaProducer is currently not available.'
+	}
 }
