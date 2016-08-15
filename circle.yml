@@ -12,6 +12,7 @@ machine:
 
 dependencies:
   override:
+    - echo $ARTIFACTORY_USERNAME
     - ./gradlew classes testClasses
     - sudo pip install docker-compose
 
