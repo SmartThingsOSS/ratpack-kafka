@@ -50,4 +50,8 @@ public class KafkaProducerService implements Service {
 			kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value)).get()
 		);
 	}
+
+	public KafkaProducerModule.Config getConfig() {
+		return config;
+	}
 }
