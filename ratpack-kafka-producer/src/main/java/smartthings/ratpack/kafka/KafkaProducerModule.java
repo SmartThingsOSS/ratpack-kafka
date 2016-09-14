@@ -3,6 +3,7 @@ package smartthings.ratpack.kafka;
 import com.google.inject.Scopes;
 import ratpack.guice.ConfigurableModule;
 
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,12 +27,12 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		String clientId;
 		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 		boolean enabled = true;
-		long lingers_ms = 0;
-		int batch_size = 16384;
-		int send_buffer_bytes = 131072;
-		int max_in_flight_requests_per_connection = 5;
-		long buffer_memory = 3354432;
-		String acks = "1";
+		Optional<long> lingers_ms;
+		Optional<int> batch_size;
+		Optional<int> send_buffer_bytes;
+		Optional<int> max_in_flight_requests_per_connection;
+		Optional<long> buffer_memory;
+		Optional<String> acks;
 
 		public Config() {
 		}
