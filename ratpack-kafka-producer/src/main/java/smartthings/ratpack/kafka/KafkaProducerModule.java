@@ -3,6 +3,7 @@ package smartthings.ratpack.kafka;
 import com.google.inject.Scopes;
 import ratpack.guice.ConfigurableModule;
 
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,12 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		String clientId;
 		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 		boolean enabled = true;
+		Optional<Long> lingers_ms;
+		Optional<Integer> batch_size;
+		Optional<Integer> send_buffer_bytes;
+		Optional<Integer> max_in_flight_requests_per_connection;
+		Optional<Long> buffer_memory;
+		Optional<String> acks;
 
 		public Config() {
 		}
@@ -72,6 +79,54 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		public void setLingers_ms(Optional<Long> lingers_ms) {
+			this.lingers_ms = lingers_ms;
+		}
+
+		public void setBatch_size(Optional<Integer> batch_size) {
+			this.batch_size = batch_size;
+		}
+
+		public void setSend_buffer_bytes(Optional<Integer> send_buffer_bytes) {
+			this.send_buffer_bytes = send_buffer_bytes;
+		}
+
+		public void setMax_in_flight_requests_per_connection(Optional<Integer> max_in_flight_requests_per_connection) {
+			this.max_in_flight_requests_per_connection = max_in_flight_requests_per_connection;
+		}
+
+		public void setBuffer_memory(Optional<Long> buffer_memory) {
+			this.buffer_memory = buffer_memory;
+		}
+
+		public void setAcks(Optional<String> acks) {
+			this.acks = acks;
+		}
+
+		public Optional<Long> getLingers_ms() {
+			return lingers_ms;
+		}
+
+		public Optional<Integer> getBatch_size() {
+			return batch_size;
+		}
+
+		public Optional<Integer> getSend_buffer_bytes() {
+			return send_buffer_bytes;
+		}
+
+		public Optional<Integer> getMax_in_flight_requests_per_connection() {
+			return max_in_flight_requests_per_connection;
+		}
+
+		public Optional<Long> getBuffer_memory() {
+			return buffer_memory;
+		}
+
+		public Optional<String> getAcks() {
+			return acks;
 		}
 	}
 }
