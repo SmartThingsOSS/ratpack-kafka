@@ -27,11 +27,11 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		String clientId;
 		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 		boolean enabled = true;
-		Optional<long> lingers_ms;
-		Optional<int> batch_size;
-		Optional<int> send_buffer_bytes;
-		Optional<int> max_in_flight_requests_per_connection;
-		Optional<long> buffer_memory;
+		Optional<Long> lingers_ms;
+		Optional<Integer> batch_size;
+		Optional<Integer> send_buffer_bytes;
+		Optional<Integer> max_in_flight_requests_per_connection;
+		Optional<Long> buffer_memory;
 		Optional<String> acks;
 
 		public Config() {
