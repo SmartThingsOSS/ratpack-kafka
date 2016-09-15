@@ -27,11 +27,11 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		String clientId;
 		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 		boolean enabled = true;
-		Optional<Long> lingers_ms;
-		Optional<Integer> batch_size;
-		Optional<Integer> send_buffer_bytes;
-		Optional<Integer> max_in_flight_requests_per_connection;
-		Optional<Long> buffer_memory;
+		Optional<Long> lingersMs;
+		Optional<Integer> batchSize;
+		Optional<Integer> sendBufferBytes;
+		Optional<Integer> maxInFlightRequestsPerConnection;
+		Optional<Long> bufferMemory;
 		Optional<String> acks;
 
 		public Config() {
@@ -45,6 +45,12 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 			props.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 			props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 			props.put("max.block.ms", maxBlockMillis);
+			props.put("linger.ms", lingersMs);
+			props.put("batch.size", batchSize);
+			props.put("send.buffer.bytes", sendBufferBytes);
+			props.put("max.in.flight.requests.per.connection", maxInFlightRequestsPerConnection);
+			props.put("buffer.memory", bufferMemory);
+			props.put("acks", acks);
 
 			return props;
 		}
@@ -81,52 +87,52 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 			this.enabled = enabled;
 		}
 
-		public void setLingers_ms(Optional<Long> lingers_ms) {
-			this.lingers_ms = lingers_ms;
+		public Optional<Long> getLingersMs() {
+			return lingersMs;
 		}
 
-		public void setBatch_size(Optional<Integer> batch_size) {
-			this.batch_size = batch_size;
+		public Optional<Integer> getBatchSize() {
+			return batchSize;
 		}
 
-		public void setSend_buffer_bytes(Optional<Integer> send_buffer_bytes) {
-			this.send_buffer_bytes = send_buffer_bytes;
+		public Optional<Integer> getSendBufferBytes() {
+			return sendBufferBytes;
 		}
 
-		public void setMax_in_flight_requests_per_connection(Optional<Integer> max_in_flight_requests_per_connection) {
-			this.max_in_flight_requests_per_connection = max_in_flight_requests_per_connection;
+		public Optional<Integer> getMaxInFlightRequestsPerConnection() {
+			return maxInFlightRequestsPerConnection;
 		}
 
-		public void setBuffer_memory(Optional<Long> buffer_memory) {
-			this.buffer_memory = buffer_memory;
-		}
-
-		public void setAcks(Optional<String> acks) {
-			this.acks = acks;
-		}
-
-		public Optional<Long> getLingers_ms() {
-			return lingers_ms;
-		}
-
-		public Optional<Integer> getBatch_size() {
-			return batch_size;
-		}
-
-		public Optional<Integer> getSend_buffer_bytes() {
-			return send_buffer_bytes;
-		}
-
-		public Optional<Integer> getMax_in_flight_requests_per_connection() {
-			return max_in_flight_requests_per_connection;
-		}
-
-		public Optional<Long> getBuffer_memory() {
-			return buffer_memory;
+		public Optional<Long> getBufferMemory() {
+			return bufferMemory;
 		}
 
 		public Optional<String> getAcks() {
 			return acks;
+		}
+
+		public void setLingersMs(Long lingersMs) {
+			this.lingersMs = Optional.ofNullable(lingersMs);
+		}
+
+		public void setBatchSize(Integer batchSize) {
+			this.batchSize = Optional.ofNullable(batchSize);
+		}
+
+		public void setSendBufferBytes(Integer sendBufferBytes) {
+			this.sendBufferBytes = Optional.ofNullable(sendBufferBytes);
+		}
+
+		public void setMaxInFlightRequestsPerConnection(Integer maxInFlightRequestsPerConnection) {
+			this.maxInFlightRequestsPerConnection = Optional.ofNullable(maxInFlightRequestsPerConnection);
+		}
+
+		public void setBufferMemory(Long bufferMemory) {
+			this.bufferMemory = Optional.ofNullable(bufferMemory);
+		}
+
+		public void setAcks(String acks) {
+			this.acks = Optional.ofNullable(acks);
 		}
 	}
 }
