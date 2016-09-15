@@ -156,4 +156,43 @@ class KafkaProducerServiceSpec extends Specification {
 		assert result.throwable.getClass() == IllegalStateException
 		assert result.throwable.getMessage() == 'KafkaProducer is currently not available.'
 	}
+
+	def "Can send a message with optional properties"() {
+		given:
+		KafkaProducerModule.Config config = new KafkaProducerModule.Config()
+		config.setClientId("test_clientId")
+		config.setServers([getTestKafkaServers()] as Set<String>)
+		config.setMaxBlockMillis(1000L)
+		config.setLingersMs(0)
+		config.setBatchSize(16384)
+		config.setSendBufferBytes(131072)
+		config.setMaxInFlightRequestsPerConnection(5)
+		config.setBufferMemory(33554432)
+		config.setAcks(1)
+
+		KafkaProducerService service
+		byte[] key = "fake_key".bytes
+		byte[] value = "fake_value".bytes
+
+		when:
+		def result = harness.yield {
+			service = new KafkaProducerService(config)
+			service.onStart(new StartEvent() {
+				@Override
+				Registry getRegistry() {
+					return Registry.empty()
+				}
+
+				@Override
+				boolean isReload() {
+					return false
+				}
+			})
+
+			return service.send("test", null, null, key, value)
+		}
+
+		then:
+		result.getValueOrThrow()
+	}
 }
