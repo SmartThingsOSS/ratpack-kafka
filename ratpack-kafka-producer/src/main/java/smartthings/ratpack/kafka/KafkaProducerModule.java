@@ -22,15 +22,22 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 	 */
 	public static class Config {
 
-		Set<String> servers;
-		String clientId;
-		Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
-		boolean enabled = true;
+		private Set<String> servers;
+		private String clientId;
+		private Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
+		private boolean enabled = true;
+		private Long lingersMs;
+		private Integer batchSize;
+		private Integer sendBufferBytes;
+		private Integer maxInFlightRequestsPerConnection;
+		private Long bufferMemory;
+		private String acks;
 
 		public Config() {
 		}
 
 		public Properties getKafkaProperties() {
+
 			Properties props = new Properties();
 
 			props.put("bootstrap.servers", String.join(",", servers));
@@ -38,6 +45,24 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 			props.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 			props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 			props.put("max.block.ms", maxBlockMillis);
+			if (lingersMs != null) {
+				props.put("linger.ms", lingersMs);
+			}
+			if (batchSize != null) {
+				props.put("batch.size", batchSize);
+			}
+			if (sendBufferBytes != null) {
+				props.put("send.buffer.bytes", sendBufferBytes);
+			}
+			if (maxInFlightRequestsPerConnection != null) {
+				props.put("max.in.flight.requests.per.connection", maxInFlightRequestsPerConnection);
+			}
+			if (bufferMemory != null) {
+				props.put("buffer.memory", bufferMemory);
+			}
+			if (acks != null && !acks.isEmpty()) {
+				props.put("acks", acks);
+			}
 
 			return props;
 		}
@@ -72,6 +97,54 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		public Long getLingersMs() {
+			return lingersMs;
+		}
+
+		public void setLingersMs(Long lingersMs) {
+			this.lingersMs = lingersMs;
+		}
+
+		public Integer getBatchSize() {
+			return batchSize;
+		}
+
+		public void setBatchSize(Integer batchSize) {
+			this.batchSize = batchSize;
+		}
+
+		public Integer getSendBufferBytes() {
+			return sendBufferBytes;
+		}
+
+		public void setSendBufferBytes(Integer sendBufferBytes) {
+			this.sendBufferBytes = sendBufferBytes;
+		}
+
+		public Integer getMaxInFlightRequestsPerConnection() {
+			return maxInFlightRequestsPerConnection;
+		}
+
+		public void setMaxInFlightRequestsPerConnection(Integer maxInFlightRequestsPerConnection) {
+			this.maxInFlightRequestsPerConnection = maxInFlightRequestsPerConnection;
+		}
+
+		public Long getBufferMemory() {
+			return bufferMemory;
+		}
+
+		public void setBufferMemory(Long bufferMemory) {
+			this.bufferMemory = bufferMemory;
+		}
+
+		public String getAcks() {
+			return acks;
+		}
+
+		public void setAcks(String acks) {
+			this.acks = acks;
 		}
 	}
 }
