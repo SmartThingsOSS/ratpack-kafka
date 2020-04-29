@@ -26,7 +26,7 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 		private String clientId;
 		private Long maxBlockMillis = TimeUnit.MINUTES.toMillis(1);
 		private boolean enabled = true;
-		private Long lingersMs;
+		private Integer lingersMs;
 		private Integer batchSize;
 		private Integer sendBufferBytes;
 		private Integer maxInFlightRequestsPerConnection;
@@ -99,11 +99,11 @@ public class KafkaProducerModule extends ConfigurableModule<KafkaProducerModule.
 			this.enabled = enabled;
 		}
 
-		public Long getLingersMs() {
+		public Integer getLingersMs() {
 			return lingersMs;
 		}
 
-		public void setLingersMs(Long lingersMs) {
+		public void setLingersMs(Integer lingersMs) {
 			this.lingersMs = lingersMs;
 		}
 
