@@ -45,7 +45,8 @@ public class KafkaProducerService implements Service {
 			return Promise.error(new IllegalStateException("KafkaProducer is currently not available."));
 		}
 
-		// Due to the fact that send can block in situations we need to treat this whole thing as blocking if https://issues.apache.org/jira/browse/KAFKA-3539 is fixed we can start consuming it as we normally would.
+		// Due to the fact that send can block in situations we need to treat this whole thing as blocking
+		//if https://issues.apache.org/jira/browse/KAFKA-3539 is fixed we can start consuming it as we normally would.
 		return Blocking.get(() ->
 			kafkaProducer.send(new ProducerRecord<>(topic, partition, timestamp, key, value)).get()
 		);

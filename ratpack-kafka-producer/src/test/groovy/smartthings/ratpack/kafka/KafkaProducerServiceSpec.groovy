@@ -200,7 +200,7 @@ class KafkaProducerServiceSpec extends Specification {
 		String clientId="test_clientId"
 		Set<String> servers=[getTestKafkaServers()] as Set<String>
 		Long maxBlockMillis=1000L
-		Long lingersMs=0;
+		Integer lingersMs=0;
 		int batchSize=1234;
 		int sendBufferBytes=134567;
 		int maxInFlightRequestsPerConnection=5;
@@ -263,7 +263,7 @@ class KafkaProducerServiceSpec extends Specification {
 	}
 
 	def "Can set and retrieve configs"() {
-		Long lingersMs=0;
+		Integer lingersMs=0;
 		int batchSize=16384;
 		int sendBufferBytes=131072;
 		int maxInFlightRequestsPerConnection=5;
@@ -381,7 +381,7 @@ class KafkaProducerServiceSpec extends Specification {
 		assert result.throwable.getMessage().contains('Invalid value -1')
 
 		where:
-		property << ['lingersMs', 'batchSize', 'sendBufferBytes', 'maxInFlightRequestsPerConnection', 'bufferMemory']
+		property << ['lingersMs', 'batchSize', 'maxInFlightRequestsPerConnection', 'bufferMemory']
 	}
 
 	@Unroll
